@@ -1,0 +1,432 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "f0542f1496cbb1c773ba202a92c994fe",
+    "packages": [
+        {
+            "name": "flow-php/array-dot",
+            "version": "0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/array-dot.git",
+                "reference": "270bed185b1e2f928f7f666545a30358fad18624"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/array-dot/zipball/270bed185b1e2f928f7f666545a30358fad18624",
+                "reference": "270bed185b1e2f928f7f666545a30358fad18624",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/ArrayDot/array_dot.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Array Dot functions",
+            "keywords": [
+                "array",
+                "dot",
+                "etl",
+                "extract",
+                "filter",
+                "load",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/array-dot/issues",
+                "source": "https://github.com/flow-php/array-dot/tree/0.8.0"
+            },
+            "time": "2024-07-05T11:21:49+00:00"
+        },
+        {
+            "name": "flow-php/etl",
+            "version": "0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/etl.git",
+                "reference": "38f8a1b284b46a76fb657088f93f3eb9b83c2a24"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/etl/zipball/38f8a1b284b46a76fb657088f93f3eb9b83c2a24",
+                "reference": "38f8a1b284b46a76fb657088f93f3eb9b83c2a24",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "flow-php/array-dot": "^0.8 || 1.x-dev",
+                "flow-php/filesystem": "^0.8 || 1.x-dev",
+                "flow-php/rdsl": "^0.8 || 1.x-dev",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0",
+                "webmozart/glob": "^3.0 || ^4.0"
+            },
+            "require-dev": {
+                "jawira/case-converter": "^3.4",
+                "moneyphp/money": "^4",
+                "ramsey/uuid": "^4.5",
+                "symfony/uid": "^6.3 || ^7.0"
+            },
+            "suggest": {
+                "jawira/case-converter": "Provides CaseConverter that is required by the EntryNameCaseConverterTransformer",
+                "moneyphp/money": "Provides MoneyParser that is required by ToMoney scalar function",
+                "ramsey/uuid": "Provides scalar function `uuid_v4` and `uuid_v7` that allow generate uuid entry"
+            },
+            "type": "library",
+            "extra": {
+                "aws/aws-sdk-php": [
+                    "S3"
+                ]
+            },
+            "autoload": {
+                "files": [
+                    "src/Flow/ETL/DSL/functions.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Extract Transform Load - Abstraction",
+            "keywords": [
+                "etl",
+                "extract",
+                "load",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/etl/issues",
+                "source": "https://github.com/flow-php/etl/tree/0.8.0"
+            },
+            "time": "2024-07-19T10:30:38+00:00"
+        },
+        {
+            "name": "flow-php/etl-adapter-csv",
+            "version": "0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/etl-adapter-csv.git",
+                "reference": "05dae2170243846ac4f6e67b40353286a78ec7a0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/etl-adapter-csv/zipball/05dae2170243846ac4f6e67b40353286a78ec7a0",
+                "reference": "05dae2170243846ac4f6e67b40353286a78ec7a0",
+                "shasum": ""
+            },
+            "require": {
+                "flow-php/etl": "^0.8 || 1.x-dev",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/ETL/Adapter/CSV/functions.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Adapter - CSV",
+            "keywords": [
+                "adapter",
+                "csv",
+                "etl",
+                "extract",
+                "load",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/etl-adapter-csv/issues",
+                "source": "https://github.com/flow-php/etl-adapter-csv/tree/0.8.0"
+            },
+            "time": "2024-07-19T10:30:38+00:00"
+        },
+        {
+            "name": "flow-php/etl-adapter-xml",
+            "version": "0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/etl-adapter-xml.git",
+                "reference": "95b7216fb2ff5797dc648eb3ba493229f8284415"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/etl-adapter-xml/zipball/95b7216fb2ff5797dc648eb3ba493229f8284415",
+                "reference": "95b7216fb2ff5797dc648eb3ba493229f8284415",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-xmlreader": "*",
+                "flow-php/etl": "^0.8 || 1.x-dev",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/ETL/Adapter/XML/functions.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Adapter - XML",
+            "keywords": [
+                "adapter",
+                "etl",
+                "extract",
+                "load",
+                "transform",
+                "xml"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/etl-adapter-xml/issues",
+                "source": "https://github.com/flow-php/etl-adapter-xml/tree/0.8.0"
+            },
+            "time": "2024-07-19T10:30:39+00:00"
+        },
+        {
+            "name": "flow-php/filesystem",
+            "version": "0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/filesystem.git",
+                "reference": "55e7482a3716041f864a05abaa4bf88b8333a744"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/filesystem/zipball/55e7482a3716041f864a05abaa4bf88b8333a744",
+                "reference": "55e7482a3716041f864a05abaa4bf88b8333a744",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+                "webmozart/glob": "^3.0 || ^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/Filesystem/DSL/functions.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Filesystem abstraction",
+            "keywords": [
+                "aws",
+                "azure",
+                "etl",
+                "extract",
+                "filesystem",
+                "gcp",
+                "load",
+                "remote",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/filesystem/issues",
+                "source": "https://github.com/flow-php/filesystem/tree/0.8.0"
+            },
+            "time": "2024-07-05T11:22:10+00:00"
+        },
+        {
+            "name": "flow-php/rdsl",
+            "version": "0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/rdsl.git",
+                "reference": "4534f1c5c7a5f672fbb143786e6dff792294a608"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/rdsl/zipball/4534f1c5c7a5f672fbb143786e6dff792294a608",
+                "reference": "4534f1c5c7a5f672fbb143786e6dff792294a608",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Remote DSL",
+            "keywords": [
+                "Algorithm",
+                "compression",
+                "etl",
+                "extract",
+                "filter",
+                "load",
+                "snappy",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/rdsl/issues",
+                "source": "https://github.com/flow-php/rdsl/tree/0.8.0"
+            },
+            "time": "2024-07-05T11:22:11+00:00"
+        },
+        {
+            "name": "psr/simple-cache",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/simple-cache.git",
+                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/764e0b3939f5ca87cb904f570ef9be2d78a07865",
+                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\SimpleCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interfaces for simple caching",
+            "keywords": [
+                "cache",
+                "caching",
+                "psr",
+                "psr-16",
+                "simple-cache"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/simple-cache/tree/3.0.0"
+            },
+            "time": "2021-10-29T13:26:27+00:00"
+        },
+        {
+            "name": "webmozart/glob",
+            "version": "4.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webmozarts/glob.git",
+                "reference": "8a2842112d6916e61e0e15e316465b611f3abc17"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webmozarts/glob/zipball/8a2842112d6916e61e0e15e316465b611f3abc17",
+                "reference": "8a2842112d6916e61e0e15e316465b611f3abc17",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3 || ^8.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5",
+                "symfony/filesystem": "^5.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webmozart\\Glob\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bernhard Schussek",
+                    "email": "bschussek@gmail.com"
+                }
+            ],
+            "description": "A PHP implementation of Ant's glob.",
+            "support": {
+                "issues": "https://github.com/webmozarts/glob/issues",
+                "source": "https://github.com/webmozarts/glob/tree/4.7.0"
+            },
+            "time": "2024-03-07T20:33:40+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "^8.3"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}
