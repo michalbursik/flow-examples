@@ -17,6 +17,19 @@ use function Flow\ETL\DSL\when;
 
 class ProductsProcessing
 {
+
+    // Source XML file & its configuration
+    const string XML_NODE_PATH = 'products/product';
+    const string SOURCE_XML_FILEPATH_FROM_ROOT = 'Examples/ProductsProcessing/data/products_50/new_products.xml';
+
+    // Products inserted after source XML file is processed (DB creates IDs), used for joining with product variants
+    const string EXISTING_PRODUCTS_AFTER_INSERT_RELATIVE_FILEPATH = 'data/products_50/existing_products_after_insert.php';
+
+    // Database mocks: existing products and product variants (e.g. from previous imports)
+    // So far no need to use - its here for better imagination of how it will work
+    const string EXISTING_PRODUCTS_RELATIVE_FILEPATH = 'data/products_50/existing_products.php';
+    const string EXISTING_PRODUCT_VARIANTS_RELATIVE_FILEPATH = 'data/products_50/existing_product_variants.php';
+
     public function run()
     {
         // The goal is to generate CSV that I can use to load into MySql database (LOAD INFILE).
@@ -46,7 +59,7 @@ class ProductsProcessing
 
     private function processProducts(): void
     {
-        $newProductsDF = data_frame()->read(from_xml('new_products.xml', 'products/product'));
+        $newProductsDF = data_frame()->read(from_xml(self::SOURCE_XML_FILEPATH_FROM_ROOT, self::XML_NODE_PATH));
 
         $newProductsDF->withEntries([
             'EXTERNAL_ID' => ref('node')->xpath('merchant_product_id')->domElementValue(),
@@ -73,35 +86,60 @@ class ProductsProcessing
             'UPDATED' => lit(date('Y-m-d H:i:s')),
 
             // Grouping key
-            'GROUPING_KEY' => ref('node')->xpath('merchant_product_id')->domElementValue(),
+            'GROUPING_KEY' => ref('node')->xpath('parent_product_id')->domElementValue(),
+
+            'GTIN' => when(
+                ref('node')->xpath('ean')->domElementValue()->equals(lit('NULL')),
+                lit(''),
+                ref('node')->xpath('ean')->domElementValue()
+            ),
+
+            // There will be more processing e.g.: (not implemented yet - still discovering how the ETL lib works)
+            // - categories: "Man > Shirts > Polo" -> DB structure:
+            //      Man category -> Shirts category (Man category id) -> Polo category (Shirts category id)"
+            // - colors: Blue, Coquelicot (Filtering out only desired colors -> skip a variant with "Coquelicot" color)
+            //      also collect some comma separated list of "allowed" colors for the "parent" product
+            // - sizes: collect some comma separated list of sizes for the "parent" product
+            // - parameters: collect useful parameters from XML for later use
+            // - shipping: extra shipping table with name & cost columns
+
+            // Also, later on I will need count of skipped items (through the filters)
+            // categorized by the filter applied (Need to tweak the ETL lib for that)
         ]);
 
         $this->applyFilters($newProductsDF);
 
         $newProductsDF->dropDuplicates('GROUPING_KEY');
 
-        $existingProducts = require_once 'existing_products.php';
-        $existingProductsDF = data_frame()->read(from_array($existingProducts));
-        $newProductsDF->join($existingProductsDF, Expression::on(equal('GROUPING_KEY', 'GROUPING_KEY')));
+        // Simulates SQL query to DB
+        $existingProducts = require_once self::EXISTING_PRODUCTS_RELATIVE_FILEPATH;
+        $columnsToDrop = [];
 
-        // Add the ID column based on the joined values -> ensures the products are updated instead of insert
-        $newProductsDF->withEntry('ID',
-            when(
-                ref('JOINED_ID')->equals(lit('')),
-                lit("NULL"),
-                ref('JOINED_ID')
-            )
-        );
+        if (!empty($existingProducts)) {
+            $existingProductsDF = data_frame()->read(from_array($existingProducts));
+            $newProductsDF->join($existingProductsDF, Expression::on(equal('GROUPING_KEY', 'GROUPING_KEY')));
 
-        $newProductsDF->drop('node', 'IN_STOCK', 'JOINED_ID', 'JOINED_GROUPING_KEY');
+            $columnsToDrop = ['joined_ID', 'joined_GROUPING_KEY'];
+
+            // Add the ID column based on the joined values -> ensures the products are updated instead of insert
+            $newProductsDF->withEntry('ID',
+                when(
+                    ref('joined_ID')->equals(lit('')),
+                    lit("NULL"),
+                    ref('joined_ID')
+                )
+            );
+        }
+
+        $newProductsDF->drop('node', 'IN_STOCK', ...$columnsToDrop);
         $newProductsDF->saveMode(SaveMode::Overwrite);
-        $newProductsDF->write(to_csv('output.csv', false));
+        $newProductsDF->write(to_csv('./products_output.csv'));
         $newProductsDF->run();
     }
 
     private function processProductVariants(): void
     {
-        $newProductVariantsDF = data_frame()->read(from_xml('new_products.xml', 'products/product'));
+        $newProductVariantsDF = data_frame()->read(from_xml(self::SOURCE_XML_FILEPATH_FROM_ROOT, self::XML_NODE_PATH));
 
         $newProductVariantsDF->withEntries([
             'EXTERNAL_ID' => ref('node')->xpath('merchant_product_id')->domElementValue(),
@@ -131,36 +169,44 @@ class ProductsProcessing
             'FEED_ID' => lit(1),
             'UPDATED' => lit(date('Y-m-d H:i:s')),
 
-            'GROUPING_KEY' => ref('node')->xpath('merchant_product_id')->domElementValue(),
+            'GROUPING_KEY' => ref('node')->xpath('parent_product_id')->domElementValue(),
         ]);
 
         $this->applyFilters($newProductVariantsDF);
 
         // Connect product with product_variants through product_id (database relation)
-        $existingProductsAfterInsert = require_once 'existing_products_after_insert.php';
+        // Simulates SQL query to DB (SELECTS only column to group it by and id of a product - created by previous insert)
+        $existingProductsAfterInsert = require_once self::EXISTING_PRODUCTS_AFTER_INSERT_RELATIVE_FILEPATH;
 
+        // There should always be some existing product variant as products are created from product_variants
         $existingProductsDF = data_frame()->read(from_array($existingProductsAfterInsert));
         $newProductVariantsDF->join($existingProductsDF, Expression::on(equal('GROUPING_KEY', 'GROUPING_KEY')));
-        $newProductVariantsDF->rename('JOINED_ID', 'ID');
+        $newProductVariantsDF->rename('joined_ID', 'ID');
         // Need to drop since joining columns needs to be unique.
-        $newProductVariantsDF->drop('JOINED_GROUPING_KEY');
+        $newProductVariantsDF->drop('joined_GROUPING_KEY');
 
-        $existingProductVariants = require_once 'existing_product_variants.php';
-        $existingProductVariantsDF = data_frame()->read(from_array($existingProductVariants));
-        $newProductVariantsDF->join($existingProductVariantsDF, Expression::on(equal('GROUPING_KEY', 'GROUPING_KEY')));
+        // Simulates SQL query to DB
+        $existingProductVariants = require_once self::EXISTING_PRODUCT_VARIANTS_RELATIVE_FILEPATH;
+        $columnsToDrop = [];
+        if ($existingProductVariants) {
+            $existingProductVariantsDF = data_frame()->read(from_array($existingProductVariants));
+            $newProductVariantsDF->join($existingProductVariantsDF, Expression::on(equal('GROUPING_KEY', 'GROUPING_KEY')));
 
-        // Add the ID column based on the joined values -> ensures the product variants are updated instead of insert
-        $newProductVariantsDF->withEntry('ID',
-            when(
-                ref('JOINED_ID')->equals(lit('')),
-                lit("NULL"),
-                ref('JOINED_ID')
-            )
-        );
+            // Add the ID column based on the joined values -> ensures the product variants are updated instead of insert
+            $newProductVariantsDF->withEntry('ID',
+                when(
+                    ref('joined_ID')->equals(lit('')),
+                    lit("NULL"),
+                    ref('joined_ID')
+                )
+            );
 
-        $newProductVariantsDF->drop('node', 'IN_STOCK', 'JOINED_ID', 'JOINED_GROUPING_KEY');
+            $columnsToDrop = ['joined_ID', 'joined_GROUPING_KEY'];
+        }
+
+        $newProductVariantsDF->drop('node', 'IN_STOCK', ...$columnsToDrop);
         $newProductVariantsDF->saveMode(SaveMode::Overwrite);
-        $newProductVariantsDF->write(to_csv('output.csv', false));
+        $newProductVariantsDF->write(to_csv('product_variants_output.csv', false));
         $newProductVariantsDF->run();
     }
 
@@ -168,16 +214,16 @@ class ProductsProcessing
     {
         return [
             // Required fields
-            ref('node')->xpath('EXTERNAL_ID')->domElementValue()->notEquals(lit('')),
-            ref('node')->xpath('NAME')->domElementValue()->notEquals(lit('')),
-            ref('node')->xpath('URL')->domElementValue()->notEquals(lit('')),
-            ref('node')->xpath('IMAGE_URL')->domElementValue()->notEquals(lit('')),
+            ref('EXTERNAL_ID')->notEquals(lit('')),
+            ref('NAME')->notEquals(lit('')),
+            ref('URL')->notEquals(lit('')),
+            ref('IMAGE_URL')->notEquals(lit('')),
 
             // Available
-            ref('node')->xpath('IN_STOCK')->domElementValue()->isTrue(),
+            ref('IN_STOCK')->isTrue(),
 
             // Price higher than 0
-            ref('node')->xpath('PRICE')->domElementValue()->greaterThan(lit(0)),
+            ref('PRICE')->greaterThan(lit(0)),
         ];
     }
 
